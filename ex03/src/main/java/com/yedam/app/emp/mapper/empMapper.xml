@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yedam.app.emp.mapper.EmpMapper">
+
+	<!-- 전체조회 resultType = 리턴타입-->
+	<select id="selectEmpAllList" resultType="EmpVO">
+	
+	<!-- 전체 조회도 컬럼을 볼 수 있게 컬럼 다적는다 한줄에 한 컬럼을 권장-->
+	
+		<!-- table 만들때 컬럼명을 약어쓰지 말기 
+			(c_id -> cId => getCId 일경우 얘는 cid로 읽어버림(대문자만 두개)-->
+		<!-- order by 누락하지 말기 -->
+		
+		SELECT employee_id,
+				first_name,
+				last_name,
+				email,
+				phone_number,
+				hire_date,
+				job_id,
+				salary,
+				commission_pct,
+				manager_id,
+				department_id
+		FROM employees
+	ORDER BY employee_id
+	
+	</select>
+	
+	<!-- 단건조회-->
+	<select id="selectEmpInfo" resultType="EmpVO">
+		SELECT employee_id,
+				first_name,
+				last_name,
+				email,
+				phone_number,
+				hire_date,
+				job_id,
+				salary,
+				commission_pct,
+				manager_id,
+				department_id
+		FROM employees
+		WHERE employee_id=#{employeeId}
+		<!-- #{ } : preparedStatment 0 -> 0,  Kang -> 'Kang'  데이터 타입주면 알아서 ''처리함
+			 ${ } : Statement 		 0 -> 0,  Kang -> Kang 	sql문 자체가 변동이 있을 때 이거 쓰면 됨 type에 대응하지 않음
+		-->
+		
+	</select>
+	
+	
+	<!-- 등록 -->
+	<insert id="insertEmpInfo" parameterType="EmpVO">
+		
+		<!-- keyProperty 는 primarykey 그리고 resulttype 은  primarykey 의 타입 -->
+		<selectKey keyProperty="employeeId"  resultType="int" order="BEFORE">
+			SELECT NVL(MAX(employee_id),0) + 1
+			FROM employees	
+		</selectKey>
+		INSERT INTO employees 
+			 	(
+			 	employee_id,
+				first_name,
+				last_name,
+				email,
+				hire_date,
+				job_id,
+				salary
+				)
+		VALUES
+			(
+				#{employeeId}
+				, #{firstName}
+				, #{lastName}
+				, #{email}
+				<if test="hireDate != null">
+				, #{hireDate}
+				</if>
+				<if test="hireDate == null">
+				, sysdate
+				</if>
+				, #{jobId}
+				, #{salary}
+			 )
+		
+		<!-- 	<if test="hireDate != null">
+				, #{hireDate}
+				</if>
+				<if test="hireDate == null">
+				, sysdate
+				</if> 
+				
+				<choose>
+					<when test="hireDate != null">
+						, #{hireDate}
+					</when>
+					<otherwise>
+						, sysdate
+					</otherwise>
+				</choose>
+		-->
+	</insert>
+	
+	
+	<!-- 수정 : 사원의 급여를 정해진 비율로 인상 -->
+	<update id="updateEmpSal">
+		UPDATE employees
+		SET salary = salary* (1+#{raise} /100)
+		WHERE employee_id = #{emp.employeeId}
+		
+		<!-- param을 썻을때는 param의 이름을 기준으로 하면됨 
+			class 도 쓸수 있다 다만(class.field 로 처리 해야함)
+		-->
+	</update>
+
+	<!-- 수정 : 사원 정보 수정 -->
+	<!-- (1) 모든항목에 데이터가 존재할 경우 -->
+	<!-- (2) Mybatis -> Dynamic SQL 사용 -->
+	
+	<!--  동적인 sql 문 쓸때 set,where 이 태그 처리가 되면 , 같은 것들을 알아서 처리해준다 -->
+	<!-- test 안은 자바의 영역 자바로 처리해줘야함 타입에 따라 적절히 저리해줘야함 -->
+	<update id="updateEmpInfo" parameterType="EmpVO">
+		UPDATE employees
+		<set>
+			<if test="firstName != null and !firstName.equals('')">
+			first_name =${firstName},
+			</if>
+			<if test="firstName != null and !firstName.equals('')">
+			email = #{email},
+			</if>
+			
+			<if test="salary > 0 ">
+			salary = #{salary},
+			</if>
+		</set>
+		WHERE employee_id= #{employeeId}
+	</update>
+	
+	<delete id="deleteEmpInfo" parameterType="int">
+		DELETE FROM employees
+		WHERE employee_id=#{empId}
+		<!-- 값이 하나만 받아 올때는  매개변수의 이름이 상관이 없다. -->
+	</delete>
+</mapper>
