@@ -1,5 +1,6 @@
 package com.yedam.app;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -26,5 +27,16 @@ public class EmpMapperClient {
 		List<EmpVO> empList = empMapper.selectEmpAllList();
 		assertTrue(!empList.isEmpty());
 	}
+	
+	@Test
+	public void selectEmpInfo() {
+		//단건조회
+		EmpVO empVO = new EmpVO();
+		empVO.setEmployeeId(100);
+		
+		EmpVO findVO = empMapper.selectEmpInfo(empVO);
+		assertEquals(findVO.getLastName(), "King");
+	}
+	
 
 }
