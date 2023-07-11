@@ -26,7 +26,7 @@
 				manager_id,
 				department_id
 		FROM employees
-	ORDER BY employee_id
+	ORDER BY employee_id DESC
 	
 	</select>
 	
