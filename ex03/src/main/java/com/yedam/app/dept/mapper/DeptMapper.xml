@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <!-- 얜 인터페이스와 연결하는 부분이기에 꼭 필요함 ctrl+ space 눌러 mapper 뜨면 파일이 잘생성된것 -->
+<mapper namespace="com.yedam.app.dept.mapper.DeptMapper">
+
+	<!-- 전체 조회 -->
+									<!-- resultype은 인터페이스의 List<DeptVO> 안에 부분을 넣어주면됨-->
+	<select id="selectDeptAllList" resultType="DeptVO">
+		SELECT department_id,
+			   department_name,
+			   manager_id,
+			   location_id
+		FROM   departments
+		ORDER BY department_id DESC
+	</select>
+	
+	<!-- 단건조회 -->
+	<select id="selectDeptInfo" resultType="DeptVO">
+		SELECT department_id,
+			   department_name,
+			   manager_id,
+			   location_id
+		FROM   departments
+		WHERE  department_id=#{departmentId}
+	</select>
+	
+	<!-- 삽입 -->
+	<insert id="insertDeptInfo" parameterType="DeptVO">
+		<selectKey keyProperty="departmentId" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(department_id),0)+10
+			FROM departments
+		</selectKey>
+		INSERT INTO departments
+					(
+					department_id
+			   		,department_name
+			   		<if test="managerId != null and managerId > 0">
+			   		,manager_id
+			   		</if>
+			   		<if test="locationId != null and locationId > 0">
+			   		,location_id
+			   		</if>
+					)
+		VALUES
+			(
+				#{departmentId}
+				,#{departmentName}
+				<if test="managerId != null and managerId > 0 ">
+				,#{managerId}
+				</if>
+				<if test="locationId != null and locationId > 0 ">
+				,#{locationId}
+				</if>
+				
+			)
+	</insert>
+	
+	<!-- 수정  동적인 sql의 경우 set절이 없어질수도 있으니 자바 쪽에서 넘어갈때 무조건 하나의 값을 넣어주던가
+		if문에 감싸지지않은 값을 넣거나 하기-->
+	<update id="updateDeptInfo" parameterType="DeptVO">
+		UPDATE departments
+		<set>
+		<!-- 이안에서의 조건은 자바 타입으로 생각하고 처리해야함 -->
+			<if test="departmentName !=null and ! departmentName.equals('')">
+			department_name = #{departmentName},
+			</if>
+			<if test="managerId !=null and managerId > 0 ">
+			manager_id = #{managerId},
+			</if>
+			<if test="locationId !=null and locationId > 0">
+			location_id = #{locationId},
+			</if>
+		</set>
+		WHERE department_id =#{departmentId}
+	</update>
+	
+	<!-- 삭제 primary key 가 기준이 되도록 하기-->
+	<delete id="deleteDeptInfo" parameterType="int">
+		DELETE FROM departments
+		WHERE department_id = #{deptId}
+	</delete>
+</mapper>
