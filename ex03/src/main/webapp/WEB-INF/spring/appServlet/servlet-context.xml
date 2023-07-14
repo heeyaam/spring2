@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+<beans:beans
+	xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -7,25 +8,52 @@
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
-	
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory 
+		외부 주소로도 연결가능-->
 	<resources mapping="/resources/**" location="/resources/" />
-					<!-- location 은 물리적인 주소 앞뒤 / 꼭 붙여야함그래야 하위까지  MAPPING가능 -->
+	<!-- location 은 물리적인 주소 앞뒤 / 꼭 붙여야함그래야 하위까지 MAPPING가능 -->
 
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
-	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
+		
+		<!-- tiles쪽을 먼저 돌고 안된것들은 두번째로 여기에 들어와 처리 -->
+		<beans:property name="order" value="2"></beans:property>
 	</beans:bean>
-	
-	<context:component-scan base-package="com.yedam.app" />
+
+
+	<!-- 모든 bean 에는 앞에 beans 가 붙어야함  tiles setting  설정에 대힌 정보-->
+	<beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<beans:property name="definitions">
+			<beans:list>
+				<beans:value>/WEB-INF/tiles.xml</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	<!-- tiles 를 실제로 동작시키는 대상을 말함 -->
+	<beans:bean id="tilesViewResolver" 
+		class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
+		<!-- tiles를 적용하는것을 1번으로 하고 -->
+		<beans:property name="order" value="1"/>
+	</beans:bean>
+
+
+
+	<context:component-scan
+		base-package="com.yedam.app" />
 	<!-- 충돌 방지를 위해 범어떤 스캔을 할건지 위를 좁혀라 -->
-	
-	
-	
-	
+
+
+
+
 </beans:beans>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+	<!--definition 은 각 레이아웃에 대한 설정임-->
+	<!-- definition 은 순서가 중요함 겹치는 부분은 위에서 부터 걸러지기 떄문에 * 는 마지막에 해야 나머지를 겹치는 것들을 처리가능-->
+	<definition name="mainTemplate" template="/WEB-INF/views/tiles/layout.jsp">
+		<!-- 어떤 파일들을 넣을건지는 put-attribute 사용  일단고정적인 부분부터 넣기 header,footer-->
+		<put-attribute name="header" value="/WEB-INF/views/tiles/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/views/tiles/footer.jsp"></put-attribute>
+	</definition>
+	
+	<!-- 얘는 template 은 아니다. extends 가 위에 있는 definition중 하나를 상속받은것인데 걔를 찾아감
+	mainTemplate 은 template 형태
+	* 는 동적으로 받고 싶을때 사용 
+	-->
+	<definition name="*/*" extends="mainTemplate">
+		<put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	
+	<definition  name="home" extends="mainTemplate">
+		<put-attribute name="content" value="/WEB-INF/views/home.jsp"/>
+	</definition>
+	
+</tiles-definitions>
