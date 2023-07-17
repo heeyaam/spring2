@@ -9,6 +9,8 @@
 		<!-- Null 에 대한 처리 -->
 		<setting name="jdbcTypeForNull" value="NULL"/>
 	</settings>
+	
+	
 	<typeAliases>
 		<package name="com.yedam.web"/>
 	</typeAliases>
