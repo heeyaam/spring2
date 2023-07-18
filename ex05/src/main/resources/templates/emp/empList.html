@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="xmlns:th=http://www.thymeleaf.org">
+<!-- xml namespace를 설정해 줘야함 thymeleaf 주소를 이용해 -->
+
+<head>
+<meta charset="UTF-8">
+<title>전체사원조회</title>
+</head>
+<body>
+	<button type="button" th:onclick="|location.href='@{/empInsert}'|">등록</button>
+	<table>
+		<thead>
+			<tr>
+				<th>employee_id</th>
+				<th>last_name</th>
+				<th>job_id</th>
+				<th>hire_date</th>
+			</tr>
+		</thead>
+		<tbody>
+				<th:block th:each="empInfo : ${empList}">
+					<tr th:onclick="|location.href='@{/empInfo(employeeId=${empInfo.employeeId})}'|">
+						<td th:text="${empInfo.employeeId}"/>
+						<td th:text="${empInfo.lastName}"/>
+						<td>[[ ${empInfo.jobId} ]]</td>
+						<td>[[ ${#dates.format(empInfo.hireDate, 'yyyy년MM월dd일')} ]]</td>
+					</tr>
+				</th:block>
+		</tbody>
+	</table>
+</body>
+</html>
